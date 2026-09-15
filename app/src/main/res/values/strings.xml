@@ -36,7 +36,7 @@
     <string name="help_limits_title">Ausgabenlimits</string>
     <string name="help_limits_body">Ein Ausgabenlimit zeigt dir, wie viel du pro Abrechnungszeitraum ausgeben möchtest.</string>
     <string name="help_recurring_title">Daueraufträge</string>
-    <string name="help_recurring_body">Daueraufträge erstellen automatisch wiederkehrende Buchungen (täglich, wöchentlich, monatlich, jährlich). Du findest sie im Menü der Kontoübersicht.</string>
+    <string name="help_recurring_body">Daueraufträge erstellen automatisch wiederkehrende Buchungen (wöchentlich, monatlich, jährlich). Du findest sie unter „Mehr“.</string>
     <string name="help_categories_title">Kategorien</string>
     <string name="help_categories_body">Jede Buchung kann einer Kategorie zugeordnet werden. Kategorien haben eine eigene Farbe und können direkt beim Erstellen einer Buchung angelegt werden.</string>
     <string name="help_analytics_title">Auswertungen</string>
@@ -66,7 +66,7 @@
     <string name="about_version_label">Version</string>
     <string name="about_open_source_label">Open Source</string>
     <string name="about_open_source_value">Nicht angegeben</string>
-    <string name="about_offline_statement">Alle Daten bleiben auf deinem Gerät. Keine Bankverbindung, kein Cloud-Sync, keine Drittanbieter.</string>
+    <string name="about_offline_statement">Alle Daten bleiben auf deinen Geräten und, wenn du willst, auf deinem eigenen Server. Keine Bankverbindung, kein Cloud-Konto, kein Dienst, der deine Daten lesen könnte.</string>
     <string name="pin_lock_title">PIN erforderlich</string>
     <string name="pin_unlock">Entsperren</string>
     <string name="pin_settings_title">PIN-Schutz</string>

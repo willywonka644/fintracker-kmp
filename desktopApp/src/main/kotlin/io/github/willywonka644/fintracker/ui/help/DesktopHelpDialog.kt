@@ -42,7 +42,7 @@ private val HELP_ENTRIES = listOf(
     HelpEntry("Positive und negative Beträge", "Positive Beträge sind Einnahmen. Negative Beträge sind Ausgaben."),
     HelpEntry("Kreditkarten-Abrechnungszyklen", "Kreditkarten werden in festen Zyklen abgerechnet, z. B. vom 20. bis zum 20. des nächsten Monats."),
     HelpEntry("Ausgabenlimits", "Ein Ausgabenlimit zeigt dir, wie viel du pro Abrechnungszeitraum ausgeben möchtest."),
-    HelpEntry("Daueraufträge", "Daueraufträge erstellen automatisch wiederkehrende Buchungen (täglich, wöchentlich, monatlich, jährlich)."),
+    HelpEntry("Daueraufträge", "Daueraufträge erstellen automatisch wiederkehrende Buchungen (wöchentlich, monatlich, jährlich)."),
     HelpEntry("Kategorien", "Jede Buchung kann einer Kategorie zugeordnet werden. Kategorien haben eine eigene Farbe und können direkt beim Erstellen einer Buchung angelegt werden."),
     HelpEntry("Auswertungen", "Die Auswertungen zeigen Saldo-Verlauf und Einnahmen/Ausgaben als Diagramme. Du kannst den Zeitraum frei wählen."),
     HelpEntry("CSV-Import", "Importiere Buchungen aus CSV-Dateien (z. B. Kontoauszüge deiner Bank). Der Import erkennt Spalten automatisch."),

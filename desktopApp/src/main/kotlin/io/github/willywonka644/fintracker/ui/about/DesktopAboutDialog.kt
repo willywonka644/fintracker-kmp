@@ -35,7 +35,8 @@ fun DesktopAboutDialog(onDismiss: () -> Unit) {
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    "Alle Daten bleiben auf deinem Gerät. Keine Bankverbindung, kein Cloud-Sync, keine Drittanbieter.",
+                    "Alle Daten bleiben auf deinen Geräten und, wenn du willst, auf deinem eigenen Server. " +
+                        "Keine Bankverbindung, kein Cloud-Konto, kein Dienst, der deine Daten lesen könnte.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
