@@ -4,6 +4,11 @@ Personal finance tracker for Android and Windows Desktop — **offline-first**, 
 
 **Current version: v0.10.0** — cross-platform (Android + Windows Desktop)
 
+> **About this repository.** This is a code-only copy, published without the
+> development history. The app is used daily with real financial data, so no database,
+> backup or key is part of this tree — and the issue tracker, which discusses real
+> balances, stays where it is.
+
 ---
 
 ## Philosophy
