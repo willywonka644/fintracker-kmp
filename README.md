@@ -4,11 +4,6 @@ Personal finance tracker for Android and Windows Desktop — **offline-first**, 
 
 **Current version: v0.10.0** — cross-platform (Android + Windows Desktop)
 
-> **About this repository.** This is a code-only copy, published without the
-> development history. The app is used daily with real financial data, so no database,
-> backup or key is part of this tree — and the issue tracker, which discusses real
-> balances, stays where it is.
-
 ---
 
 ## Philosophy
@@ -203,6 +198,17 @@ local only — it needs an emulator.
 
 > Maestro drives the **installed** app against the **real** database on the device.
 > Run it on an emulator or a test device, never on a phone holding real account data.
+
+---
+
+## Licence
+
+**None.** The code carries no licence, which under copyright means it may be read but not
+reused. That is deliberate rather than an omission: this is a personal finance app the
+author uses daily, published so the work can be looked at, not so it can be taken.
+
+Third-party files are a separate matter and do carry their licences — see
+[LICENSES/](LICENSES/).
 
 ---
 
