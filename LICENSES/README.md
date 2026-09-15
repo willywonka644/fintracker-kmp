@@ -1,6 +1,7 @@
 # Third-party licences
 
-Code in this repository is the author's own. These files are not.
+Code in this repository is the author's own and is MIT-licensed — see
+[LICENSE](../LICENSE). These files are not, and carry their own terms.
 
 ## Manrope (10 font files)
 

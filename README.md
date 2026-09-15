@@ -1,8 +1,8 @@
 # FinTracker
 
-Personal finance tracker for Android and Windows Desktop — **offline-first**, with no connection to online banking or external services.
+Personal finance tracker for Android, Windows and macOS — **offline-first**, with no connection to online banking or external services.
 
-**Current version: v0.10.0** — cross-platform (Android + Windows Desktop)
+**Current version: v0.10.0** — cross-platform (Android + Windows + macOS)
 
 > **About this repository.** This is a code-only copy, published without the
 > development history. The app is used daily with real financial data, so no database,
@@ -208,11 +208,15 @@ local only — it needs an emulator.
 
 ## Licence
 
-**None.** The code carries no licence, which under copyright means it may be read but not
-reused. That is deliberate rather than an omission: this is a personal finance app the
-author uses daily, published so the work can be looked at, not so it can be taken.
+**MIT** — see [LICENSE](LICENSE). Use it, change it, build on it; keep the copyright
+notice, and expect no warranty.
 
-Third-party files are a separate matter and do carry their licences — see
+This replaces an earlier decision to publish under no licence at all, which would have
+meant "may be read but not reused". The reasoning there was that the work should be
+lookable, not takeable. It changed for a plain reason: somebody asked whether they could
+work with it, and "you may read it" is a poor answer to that question.
+
+Third-party files are a separate matter and carry their own licences — see
 [LICENSES/](LICENSES/).
 
 ---
