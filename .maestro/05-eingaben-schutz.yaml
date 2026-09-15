@@ -1,0 +1,52 @@
+# Phase 6.5 — F1: ein Fehltipp darf die Eingaben nicht kosten.
+#
+# Gemeldet aus der echten Nutzung: Beim Erfassen einer Buchung neben den Sheet
+# getippt, und alles Eingegebene war weg. Dieser Flow hält das Gegenteil fest.
+#
+# Runs against an emulator only: clearState wipes the app's data.
+appId: io.github.willywonka644.fintracker
+---
+- launchApp:
+    clearState: true
+
+- tapOn: "Konto hinzufügen"
+- tapOn: "Name"
+- inputText: "Testkonto"
+- tapOn: "Girokonto"
+- tapOn: "Speichern"
+- assertVisible: "Testkonto"
+
+# ── Mit Eingaben: es muss nachgefragt werden ─────────────────────────────────
+- tapOn: "Buchung hinzufügen"
+- tapOn: "Testkonto"
+- tapOn: "Einmalige Buchung"
+- tapOn: "Betrag"
+- inputText: "42"
+- tapOn: "Beschreibung (optional)"
+- inputText: "Wichtige Eingabe"
+
+# Tipp weit oben auf den abgedunkelten Rand — der Fehltipp, um den es geht.
+- tapOn:
+    point: "50%,5%"
+
+- assertVisible: "Eingaben verwerfen?"
+- tapOn: "Weiter bearbeiten"
+
+# Der Sheet ist zurück und die Eingaben stehen noch.
+- assertVisible: "Wichtige Eingabe"
+
+# ── Verwerfen tut, was es sagt ───────────────────────────────────────────────
+- tapOn:
+    point: "50%,5%"
+- assertVisible: "Eingaben verwerfen?"
+- tapOn: "Verwerfen"
+- assertNotVisible: "Wichtige Eingabe"
+
+# ── Ohne Eingaben: keine Rückfrage ───────────────────────────────────────────
+# Wer den Sheet nur aus Versehen geöffnet hat, soll ihn ohne Dialog loswerden.
+- tapOn: "Buchung hinzufügen"
+- tapOn: "Testkonto"
+- tapOn: "Einmalige Buchung"
+- tapOn:
+    point: "50%,5%"
+- assertNotVisible: "Eingaben verwerfen?"

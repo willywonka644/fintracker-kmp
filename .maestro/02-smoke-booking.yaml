@@ -1,0 +1,52 @@
+# Phase 6.5 Tier 3 — smoke flow: from an empty app to a booking on file.
+#
+# Deliberately the shortest path a real user takes on a fresh install:
+# create an account, then book something on it.
+#
+# The account is called "Testkonto", not "Girokonto Test" — the account type
+# radio is labelled "Girokonto", and a name containing that word would make the
+# text selectors ambiguous.
+#
+# Runs against an emulator only: clearState wipes the app's data.
+appId: io.github.willywonka644.fintracker
+---
+- launchApp:
+    clearState: true
+
+# ── Konto anlegen ────────────────────────────────────────────────────────────
+- tapOn: "Konto hinzufügen"
+- tapOn: "Name"
+- inputText: "Testkonto"
+# Picking the type also fills in the billing day (1), which the dialog requires.
+- tapOn: "Girokonto"
+- tapOn: "Speichern"
+
+- assertVisible: "Testkonto"
+
+# ── Buchung anlegen ──────────────────────────────────────────────────────────
+- tapOn: "Buchung hinzufügen"
+# The sheet is a three-step wizard: pick the account, pick what kind of entry
+# this is, and only then does the amount field appear.
+- tapOn: "Testkonto"
+- tapOn: "Einmalige Buchung"
+- tapOn: "Betrag"
+- inputText: "15"
+- tapOn: "Beschreibung (optional)"
+- inputText: "Testbuchung"
+# No hideKeyboard here: on Android Maestro hides the keyboard with the back
+# gesture, which closes the bottom sheet along with it. Scrolling to the button
+# gets it into view without dismissing anything.
+- scrollUntilVisible:
+    element:
+      text: "Buchung speichern"
+    direction: DOWN
+- tapOn: "Buchung speichern"
+
+# ── Ankommen prüfen ──────────────────────────────────────────────────────────
+- tapOn: "Buchungen"
+- assertVisible: "Testbuchung"
+
+# F2: Es wurde nie eine Kategorie gewählt, also darf auch keine dranstehen.
+# Vorher bekam die Buchung stillschweigend "Kreditkartenabrechnung" — genau die
+# Kategorie, die aus allen Auswertungen herausgefiltert wird.
+- assertNotVisible: "Kreditkartenabrechnung"

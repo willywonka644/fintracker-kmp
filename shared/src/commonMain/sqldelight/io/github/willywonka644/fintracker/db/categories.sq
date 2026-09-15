@@ -1,0 +1,33 @@
+CREATE TABLE category (
+    id        TEXT    NOT NULL PRIMARY KEY,
+    name      TEXT    NOT NULL,
+    iconName  TEXT    NOT NULL,
+    color     INTEGER NOT NULL,
+    isDefault      INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    lastModifiedAt INTEGER NOT NULL DEFAULT 0,
+    deleted        INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX category_isDefault ON category(isDefault);
+
+selectAll:
+SELECT * FROM category WHERE deleted = 0;
+
+selectAllIncludingDeleted:
+SELECT * FROM category;
+
+selectById:
+SELECT * FROM category WHERE id = ?;
+
+insert:
+INSERT OR REPLACE INTO category (id, name, iconName, color, isDefault, lastModifiedAt, deleted)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+softDelete:
+UPDATE category SET deleted = 1, lastModifiedAt = ? WHERE id = ?;
+
+delete:
+DELETE FROM category WHERE id = ?;
+
+deleteAll:
+DELETE FROM category;

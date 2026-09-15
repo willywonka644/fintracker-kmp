@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Backup rules for Android 11 and below (API 30-). Android 12+ uses
+   data_extraction_rules.xml, which carries the same exclusions.
+
+   allowBackup is on, so by default Android copies the entire app data directory
+   to the user's Google Drive. That is fine for the bookkeeping data, which the
+   user can also export deliberately — but not for the sync credentials: the API
+   key is the only thing standing between the internet and every account, and a
+   key in a backup is a key in every copy of that backup (#89, #91).
+
+   The path must match ServerSyncStore.STORE_NAME. An exclude rule that matches
+   nothing is not an error, so renaming the store would silently re-enable the
+   backup.
+-->
+<full-backup-content>
+    <exclude domain="file" path="datastore/server_sync.preferences_pb" />
+</full-backup-content>

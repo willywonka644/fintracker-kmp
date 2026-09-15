@@ -1,0 +1,78 @@
+CREATE TABLE booking (
+    id                 TEXT    NOT NULL PRIMARY KEY,
+    accountId          TEXT    NOT NULL,
+    amount             REAL    NOT NULL,
+    description        TEXT    NOT NULL,
+    timestamp          INTEGER NOT NULL,
+    category           TEXT,
+    merchantName       TEXT,
+    rawDescription     TEXT,
+    recurringRuleId    TEXT,
+    status             TEXT    AS io.github.willywonka644.fintracker.BookingStatus NOT NULL,
+    effectiveDate      INTEGER,
+    source             TEXT    AS io.github.willywonka644.fintracker.BookingSource NOT NULL,
+    importBatchId      TEXT,
+    paymentReference   TEXT,
+    attachmentPath     TEXT,
+    installmentGroupId TEXT,
+    ocrRawText         TEXT,
+    isVerified         INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    lastModifiedAt     INTEGER NOT NULL DEFAULT 0,
+    deleted            INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    -- Added in 5.sqm. Sits last because ALTER TABLE ADD COLUMN appends, and this
+    -- definition has to match what a migrated database actually looks like.
+    transferGroupId    TEXT
+);
+
+CREATE INDEX booking_accountId        ON booking(accountId);
+CREATE INDEX booking_timestamp        ON booking(timestamp);
+CREATE INDEX booking_status           ON booking(status);
+CREATE INDEX booking_recurringRuleId  ON booking(recurringRuleId);
+CREATE INDEX booking_importBatchId    ON booking(importBatchId);
+CREATE INDEX booking_installmentGroup ON booking(installmentGroupId);
+CREATE INDEX booking_transferGroup     ON booking(transferGroupId);
+
+selectAll:
+SELECT * FROM booking WHERE deleted = 0;
+
+selectAllIncludingDeleted:
+SELECT * FROM booking;
+
+selectByAccount:
+SELECT * FROM booking WHERE accountId = ? AND deleted = 0;
+
+selectById:
+SELECT * FROM booking WHERE id = ?;
+
+selectByStatus:
+SELECT * FROM booking WHERE status = ?;
+
+selectByImportBatch:
+SELECT * FROM booking WHERE importBatchId = ?;
+
+selectByInstallmentGroup:
+SELECT * FROM booking WHERE installmentGroupId = ?;
+
+selectByTransferGroup:
+SELECT * FROM booking WHERE transferGroupId = ?;
+
+insert:
+INSERT OR REPLACE INTO booking (
+    id, accountId, amount, description, timestamp,
+    category, merchantName, rawDescription, recurringRuleId,
+    status, effectiveDate, source, importBatchId,
+    paymentReference, attachmentPath, installmentGroupId,
+    ocrRawText, isVerified, lastModifiedAt, deleted, transferGroupId
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateVerified:
+UPDATE booking SET isVerified = ? WHERE id = ?;
+
+softDelete:
+UPDATE booking SET deleted = 1, lastModifiedAt = ? WHERE id = ?;
+
+delete:
+DELETE FROM booking WHERE id = ?;
+
+deleteAll:
+DELETE FROM booking;

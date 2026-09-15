@@ -1,0 +1,15 @@
+# Phase 6.5 Tier 3 — smallest possible flow.
+#
+# Its only job is to prove the toolchain works: Maestro talks to the emulator,
+# the app installs and starts, and text can be asserted. Real flows build on top.
+#
+# clearState wipes the app's data first, so every run starts from the same
+# empty database. That is also why these flows must only ever run against an
+# emulator or a dedicated test device — never a phone holding real accounts.
+appId: io.github.willywonka644.fintracker
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: "Übersicht"
+- assertVisible: "Noch keine Konten angelegt"

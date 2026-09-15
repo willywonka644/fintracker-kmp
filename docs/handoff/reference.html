@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FinTracker — Handoff Reference · Trust Blue</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0B0E16; --bg2: #0E1220; --surf: #161A28; --surfHi: #1D2233;
+    --line: rgba(255,255,255,.08); --txt: #fff; --sub: #8A90A6; --faint: #5A6076;
+    --accent: #6E7BFF; --pos: #34D399; --neg: #FB7185;
+    --grad: linear-gradient(135deg,#5560FF 0%,#7E74FF 52%,#A99BFF 100%);
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--txt); font-family: 'Manrope', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); text-decoration: none; }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 28px 96px; }
+
+  /* hero */
+  header.hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); margin-bottom: 44px; }
+  header.hero .inner { max-width: 1280px; margin: 0 auto; padding: 54px 28px 46px; position: relative; z-index: 1; }
+  header.hero::before { content: ""; position: absolute; inset: 0; background: radial-gradient(90% 120% at 18% -10%, rgba(110,123,255,.22), transparent 60%); pointer-events: none; }
+  .logo { width: 50px; height: 50px; border-radius: 15px; background: var(--grad); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 19px; box-shadow: 0 10px 28px rgba(110,123,255,.45); margin-bottom: 20px; }
+  h1 { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 10px; }
+  .lede { font-size: 16.5px; color: var(--sub); max-width: 680px; line-height: 1.55; margin: 0; }
+  .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .tag { font-size: 12.5px; font-weight: 700; padding: 7px 13px; border-radius: 999px; background: var(--surf); border: 1px solid var(--line); color: var(--sub); }
+  .tag b { color: var(--txt); }
+
+  section { margin-bottom: 56px; }
+  .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  h2 { font-size: 25px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .sub { color: var(--sub); font-size: 14.5px; line-height: 1.55; margin: 0 0 24px; max-width: 760px; }
+
+  /* prototype frames */
+  .frames { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 980px){ .frames { grid-template-columns: 1fr; } }
+  .frame-card { background: var(--bg2); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+  .frame-card .bar { display: flex; align-items: center; justify-content: space-between; padding: 15px 18px; border-bottom: 1px solid var(--line); }
+  .frame-card .bar h3 { font-size: 15px; font-weight: 800; margin: 0; }
+  .frame-card .bar span { font-size: 12px; color: var(--faint); }
+  .frame-card iframe { width: 100%; border: 0; display: block; background: var(--bg); }
+  .frame-card.android iframe { height: 560px; }
+  .frame-card.desktop iframe { height: 560px; }
+  .open { font-size: 12.5px; font-weight: 700; padding: 6px 12px; border-radius: 9px; background: var(--surf); border: 1px solid var(--line); color: var(--accent); }
+
+  /* token grid */
+  .tokens { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px,1fr)); gap: 12px; }
+  .swatch { background: var(--surf); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .swatch .chip { height: 62px; }
+  .swatch .info { padding: 10px 12px; }
+  .swatch .nm { font-size: 12.5px; font-weight: 700; }
+  .swatch .hex { font-family: var(--mono); font-size: 11px; color: var(--sub); margin-top: 2px; }
+  .swatch .role { font-size: 10.5px; color: var(--faint); margin-top: 4px; }
+
+  /* type scale */
+  .typerow { display: flex; align-items: baseline; gap: 18px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+  .typerow .label { width: 150px; flex: 0 0 auto; font-family: var(--mono); font-size: 12px; color: var(--sub); }
+  .typerow .spec { margin-left: auto; font-family: var(--mono); font-size: 11.5px; color: var(--faint); white-space: nowrap; }
+
+  /* mapping table */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th { text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: 0 14px 12px; }
+  tbody td { padding: 13px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+  tbody tr td:first-child { font-weight: 700; width: 30%; }
+  tbody td code, .ic { font-family: var(--mono); font-size: 12px; color: var(--accent); background: rgba(110,123,255,.1); padding: 2px 7px; border-radius: 6px; }
+  .diff { font-size: 11.5px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+  .d-triv { background: rgba(52,211,153,.15); color: var(--pos); }
+  .d-easy { background: rgba(110,123,255,.15); color: var(--accent); }
+
+  /* files */
+  .files { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 12px; }
+  .file { background: var(--surf); border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 15px; }
+  .file .fn { font-family: var(--mono); font-size: 13.5px; font-weight: 600; color: var(--txt); display: flex; align-items: center; gap: 8px; }
+  .file .fn::before { content: "{}"; color: var(--accent); font-weight: 700; }
+  .file .fd { font-size: 12px; color: var(--sub); margin-top: 7px; line-height: 1.45; }
+  .file .badge { display: inline-block; margin-top: 9px; font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; }
+  .b-new { background: rgba(52,211,153,.15); color: var(--pos); }
+  .b-rep { background: rgba(110,123,255,.15); color: var(--accent); }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 760px){ .steps { grid-template-columns: 1fr; } .typerow .spec { display: none; } .frame-card .bar { flex-wrap: wrap; gap: 6px; } }
+  .step { display: flex; gap: 14px; background: var(--surf); border: 1px solid var(--line); border-radius: 14px; padding: 15px 16px; }
+  .step .n { width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9px; background: var(--grad); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; }
+  .step .t { font-size: 14px; font-weight: 700; }
+  .step .s { font-size: 12px; color: var(--sub); margin-top: 3px; line-height: 1.4; }
+  .step.platform-d .n { background: var(--surfHi); color: var(--accent); border: 1px solid var(--line); }
+
+  .callout { background: linear-gradient(135deg, rgba(110,123,255,.1), rgba(110,123,255,.02)); border: 1px solid rgba(110,123,255,.25); border-radius: 16px; padding: 20px 22px; display: flex; gap: 16px; align-items: flex-start; }
+  .callout .ico { font-size: 22px; }
+  .callout h4 { margin: 0 0 5px; font-size: 15px; font-weight: 800; }
+  .callout p { margin: 0; font-size: 13.5px; color: var(--sub); line-height: 1.55; }
+  .callout code { font-family: var(--mono); font-size: 12.5px; color: var(--txt); background: rgba(255,255,255,.06); padding: 1px 6px; border-radius: 5px; }
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="inner">
+    <div class="logo">FT</div>
+    <h1>FinTracker · Redesign-Handoff</h1>
+    <p class="lede">Alles, was du brauchst, um das „Trust Blue"-Redesign mit Claude Code in deine Kotlin-App zu bringen — fertige Theme-Dateien, ein Schritt-für-Schritt-Plan und die interaktiven Prototypen als visuelle Referenz.</p>
+    <div class="meta">
+      <span class="tag">Richtung <b>A · Trust Blue</b></span>
+      <span class="tag"><b>Android</b> + Desktop</span>
+      <span class="tag">Dunkel + Hell</span>
+      <span class="tag">Material 3 · Compose</span>
+      <span class="tag">Stand <b>v0.6.0</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- SIDE BY SIDE -->
+  <section>
+    <div class="eyebrow">Visuelle Referenz</div>
+    <h2>Prototypen — Seite an Seite</h2>
+    <p class="sub">Die lebende Spezifikation. Beide nutzen exakt dieselben Tokens. Baue jeden Compose-Screen nach und vergleiche ihn mit dem passenden Prototyp. Klicke „Vollbild öffnen" zum freien Durchklicken inkl. Dunkel/Hell-Umschalter.</p>
+    <div class="frames">
+      <div class="frame-card android">
+        <div class="bar"><h3>📱 Android</h3><a class="open" href="../FinTracker Prototype.html" target="_blank">Vollbild öffnen ↗</a></div>
+        <iframe src="../FinTracker Prototype.html" title="Android Prototype" loading="lazy"></iframe>
+      </div>
+      <div class="frame-card desktop">
+        <div class="bar"><h3>🖥️ Desktop</h3><a class="open" href="../FinTracker Desktop.html" target="_blank">Vollbild öffnen ↗</a></div>
+        <iframe src="../FinTracker Desktop.html" title="Desktop Prototype" loading="lazy"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOKENS -->
+  <section>
+    <div class="eyebrow">Design-Tokens</div>
+    <h2>Farben</h2>
+    <p class="sub">Einzige Quelle der Wahrheit. Bereits kodiert in <code style="font-family:var(--mono);font-size:12.5px">handoff/theme/Color.kt</code>. Dunkel-Werte gezeigt; Hell-Varianten in der Datei.</p>
+    <div class="tokens" id="tokens"></div>
+  </section>
+
+  <!-- TYPE -->
+  <section>
+    <div class="eyebrow">Design-Tokens</div>
+    <h2>Schrift — Manrope</h2>
+    <p class="sub">Geldbeträge nutzen ExtraBold + Tabular-Numbers (<code style="font-family:var(--mono);font-size:12.5px">fontFeatureSettings = "tnum"</code>), damit Ziffern nicht springen.</p>
+    <div id="typescale"></div>
+  </section>
+
+  <!-- THEME FILES -->
+  <section>
+    <div class="eyebrow">Schritt 0</div>
+    <h2>Fertige Theme-Dateien</h2>
+    <p class="sub">In <code style="font-family:var(--mono);font-size:12.5px">handoff/theme/</code>. Ersetze die vier Template-Dateien im Paket <code style="font-family:var(--mono);font-size:12.5px">io.github.willywonka644.fintracker.ui.theme</code> und füge <code style="font-family:var(--mono);font-size:12.5px">FinColors.kt</code> hinzu — dann einmal bauen.</p>
+    <div class="files">
+      <div class="file"><div class="fn">Color.kt</div><div class="fd">Komplette Trust-Blue-Palette: Akzent, Neutrale (dunkel/hell), Income/Expense, Kategorie-Farben.</div><span class="badge b-rep">ersetzt</span></div>
+      <div class="file"><div class="fn">Theme.kt</div><div class="fd">Dark/Light ColorScheme. Entfernt <code>dynamicColor</code>, stellt <code>FinColors</code> bereit.</div><span class="badge b-rep">ersetzt</span></div>
+      <div class="file"><div class="fn">Type.kt</div><div class="fd">Manrope-Typoskala (400–800), abgestimmt auf den Prototyp.</div><span class="badge b-rep">ersetzt</span></div>
+      <div class="file"><div class="fn">Shape.kt</div><div class="fd">Eckenradien: Chip 10 · Karte 16 · Hero/Sheet 20 dp.</div><span class="badge b-new">neu</span></div>
+      <div class="file"><div class="fn">FinColors.kt</div><div class="fd">Theme-Erweiterung: <code>income</code>, <code>expense</code>, <code>heroGradient</code>, <code>category()</code> — was M3 nicht hat.</div><span class="badge b-new">neu</span></div>
+    </div>
+    <div style="height:18px"></div>
+    <div class="callout">
+      <div class="ico">⚠️</div>
+      <div>
+        <h4>Die eine Verhaltensänderung</h4>
+        <p>Dein aktuelles <code>Theme.kt</code> nutzt <code>dynamicColor = true</code> — die App leiht sich also die Wallpaper-Farben des Geräts. Das neue Theme schaltet das ab, damit die App überall identisch aussieht. Entferne alle Aufrufer, die <code>dynamicColor = …</code> übergeben.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPONENT MAPPING -->
+  <section>
+    <div class="eyebrow">Machbarkeit</div>
+    <h2>Prototyp → Compose</h2>
+    <p class="sub">Jedes Element bildet auf Standard-Jetpack-Compose ab. Nichts Exotisches — Vico hast du bereits.</p>
+    <table>
+      <thead><tr><th>Prototyp-Element</th><th>Compose-Entsprechung</th><th>Aufwand</th></tr></thead>
+      <tbody id="maprows"></tbody>
+    </table>
+  </section>
+
+  <!-- PLAN -->
+  <section>
+    <div class="eyebrow">Umsetzungsplan</div>
+    <h2>Phasen für Claude Code</h2>
+    <p class="sub">Vollständig in <code style="font-family:var(--mono);font-size:12.5px">handoff/FinTracker-Implementation-Plan.md</code> — jeder Schritt mit einem fertigen „Task for Claude Code"-Block zum Einfügen. Android zuerst (1–8), dann Desktop (9–12), gleiche Tokens.</p>
+    <div class="steps" id="steps"></div>
+  </section>
+
+  <div class="callout">
+    <div class="ico">🚀</div>
+    <div>
+      <h4>So startest du</h4>
+      <p>1 · Theme-Dateien einfügen (Schritt 0) und einmal bauen — grüner Build heißt: der Rest ist reine UI-Arbeit. &nbsp;2 · Schritt für Schritt den jeweiligen „Task for Claude Code"-Block einfügen. &nbsp;3 · Nach jedem Screen mit dem Prototyp oben vergleichen.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TOKENS = [
+    ["Accent / Primary", "#6E7BFF", "primary"],
+    ["Hintergrund", "#0B0E16", "background"],
+    ["Karte (Surface)", "#161A28", "surface"],
+    ["Eingabe / verschachtelt", "#1D2233", "surfaceContainerHigh"],
+    ["Text primär", "#FFFFFF", "onSurface"],
+    ["Text sekundär", "#8A90A6", "FinColors.textSub"],
+    ["Text dezent", "#5A6076", "FinColors.textFaint"],
+    ["Income (grün)", "#34D399", "FinColors.income"],
+    ["Expense (rot)", "#FB7185", "FinColors.expense"],
+    ["Hero-Verlauf", "linear-gradient(135deg,#5560FF,#7E74FF,#A99BFF)", "FinColors.heroGradient"],
+  ];
+  const tk = document.getElementById("tokens");
+  TOKENS.forEach(([nm, hex, role]) => {
+    const grad = hex.startsWith("linear");
+    tk.insertAdjacentHTML("beforeend", `<div class="swatch"><div class="chip" style="background:${hex}"></div><div class="info"><div class="nm">${nm}</div><div class="hex">${grad ? "135° Verlauf" : hex}</div><div class="role">${role}</div></div></div>`);
+  });
+
+  const TYPE = [
+    ["displaySmall", "Gesamtvermögen", 36, 800, "36 / EB / -0.7"],
+    ["headlineLarge", "Übersicht", 25, 800, "25 / EB / -0.5"],
+    ["titleLarge", "Konten", 18, 700, "18 / Bold / -0.2"],
+    ["titleSmall", "Volksbank Girokonto", 14, 600, "14 / SemiBold"],
+    ["bodyMedium", "Kategorie · 28. Mai", 13.5, 400, "13.5 / Regular"],
+    ["labelMedium", "Einnahmen", 11.5, 600, "11.5 / SemiBold"],
+  ];
+  const ts = document.getElementById("typescale");
+  TYPE.forEach(([label, sample, size, w, spec]) => {
+    ts.insertAdjacentHTML("beforeend", `<div class="typerow"><span class="label">${label}</span><span style="font-size:${size}px;font-weight:${w};letter-spacing:-0.02em">${sample}</span><span class="spec">${spec}</span></div>`);
+  });
+
+  const MAP = [
+    ["Gradient-Balance-Hero", "Box + Brush.linearGradient", "triv"],
+    ["Konten- & Buchungskarten", "Surface / Card + RoundedCornerShape", "triv"],
+    ["Bottom-Navigation", "NavigationBar (4 Ziele)", "triv"],
+    ["Filter- / Zeitraum-Chips", "FilterChip", "triv"],
+    ["Add-Booking Sheet", "ModalBottomSheet (3 Schritte)", "easy"],
+    ["Kategorie-Chip (Icon im Kreis)", "Box + Icon, Tint 15 %", "triv"],
+    ["PIN / Einstellungs-Schalter", "Switch", "triv"],
+    ["Donut „Ausgaben/Kategorie\"", "Canvas { drawArc() }", "easy"],
+    ["Saldoverlauf-Linie + Bars", "Vico (bereits im Projekt)", "easy"],
+    ["Desktop-Sidebar + Tabelle", "Row + Column / LazyColumn-Grid", "easy"],
+  ];
+  const mr = document.getElementById("maprows");
+  MAP.forEach(([a, b, d]) => {
+    const cls = d === "triv" ? "d-triv" : "d-easy";
+    const lbl = d === "triv" ? "Trivial" : "Einfach";
+    mr.insertAdjacentHTML("beforeend", `<tr><td>${a}</td><td><code>${b}</code></td><td><span class="diff ${cls}">${lbl}</span></td></tr>`);
+  });
+
+  const STEPS = [
+    ["0", "Branch + Theme einfügen", "Vier Dateien ersetzen, FinColors + Manrope hinzufügen, bauen.", "a"],
+    ["1", "Wiederverwendbare Komponenten", "MoneyText, FinCard, CategoryChip, BalanceHero, Chips …", "a"],
+    ["2", "Navigations-Shell", "Schwebende Bottom-Bar + Gradient-FAB.", "a"],
+    ["3", "Übersicht (Dashboard)", "Hero, Konten-Liste, Kategorie-Donut.", "a"],
+    ["4", "Buchungen (Liste)", "InOut, Filter-Chips, Zeilen mit Flags + Häkchen.", "a"],
+    ["5", "Buchung hinzufügen/bearbeiten", "ModalBottomSheet, 3-Schritt-Flow.", "a"],
+    ["6", "Auswertungen", "Vico-Charts neu eingefärbt + Donut.", "a"],
+    ["7", "Verwaltungs-Screens", "Konto-Detail, Daueraufträge, Raten, Abgleich, Audit, Kategorien.", "a"],
+    ["8", "Mehr (Einstellungen) + Politur", "Gruppierte Zeilen, Edge-to-edge, QA.", "a"],
+    ["9", "Desktop: Theme + Sidebar-Shell", "Geteiltes Theme, Titelleiste, Sidebar-Navigation.", "d"],
+    ["10", "Desktop: Dashboard + Buchungen", "KPI-Reihe, 2 Spalten, Daten-Tabelle.", "d"],
+    ["11", "Desktop: Rest + Add-Dialog", "Auswertungen, Raten, Einstellungen, zentrierter Dialog.", "d"],
+    ["12", "Cross-Platform-QA", "Beide Targets gegen die Prototypen prüfen.", "d"],
+  ];
+  const sc = document.getElementById("steps");
+  STEPS.forEach(([n, t, s, p]) => {
+    sc.insertAdjacentHTML("beforeend", `<div class="step platform-${p}"><div class="n">${n}</div><div><div class="t">${t}</div><div class="s">${s}</div></div></div>`);
+  });
+</script>
+</body>
+</html>

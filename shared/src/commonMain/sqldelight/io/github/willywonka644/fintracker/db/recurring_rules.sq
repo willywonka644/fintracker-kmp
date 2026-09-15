@@ -1,0 +1,42 @@
+CREATE TABLE recurringRule (
+    id                  TEXT    NOT NULL PRIMARY KEY,
+    amount              REAL    NOT NULL,
+    description         TEXT    NOT NULL,
+    accountId           TEXT    NOT NULL,
+    frequency           TEXT    AS io.github.willywonka644.fintracker.Frequency NOT NULL,
+    nextExecutionDate   TEXT    AS kotlinx.datetime.LocalDate NOT NULL,
+    remainingExecutions INTEGER,
+    category            TEXT,
+    excludedDates       TEXT    AS io.github.willywonka644.fintracker.db.ExcludedDates NOT NULL DEFAULT '',
+    lastModifiedAt      INTEGER NOT NULL DEFAULT 0,
+    deleted             INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX recurringRule_accountId ON recurringRule(accountId);
+
+selectAll:
+SELECT * FROM recurringRule WHERE deleted = 0;
+
+selectAllIncludingDeleted:
+SELECT * FROM recurringRule;
+
+selectById:
+SELECT * FROM recurringRule WHERE id = ?;
+
+selectByAccount:
+SELECT * FROM recurringRule WHERE accountId = ? AND deleted = 0;
+
+insert:
+INSERT OR REPLACE INTO recurringRule (
+    id, amount, description, accountId, frequency,
+    nextExecutionDate, remainingExecutions, category, excludedDates, lastModifiedAt, deleted
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+softDelete:
+UPDATE recurringRule SET deleted = 1, lastModifiedAt = ? WHERE id = ?;
+
+delete:
+DELETE FROM recurringRule WHERE id = ?;
+
+deleteAll:
+DELETE FROM recurringRule;

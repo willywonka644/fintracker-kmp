@@ -1,0 +1,13 @@
+CREATE TABLE app_settings (
+    key   TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+get:
+SELECT value FROM app_settings WHERE key = ?;
+
+set:
+INSERT OR REPLACE INTO app_settings (key, value) VALUES (?, ?);
+
+delete:
+DELETE FROM app_settings WHERE key = ?;

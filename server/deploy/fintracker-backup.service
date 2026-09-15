@@ -1,0 +1,18 @@
+[Unit]
+Description=Sicherung der FinTracker-Server-Datenbank
+Documentation=https://github.com/willywonka644/fintracker/issues/96
+
+# Same invariant as the service itself (#93): without the stick mounted,
+# /srv/fintracker is not the database but an empty directory. The service would
+# create an empty database there; the backup would back up an empty one and push
+# the good state out of the rotation. One cause, one remedy, two failures.
+RequiresMountsFor=/srv/fintracker
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/fintracker-backup
+
+# Runs as root rather than as the service user: the database belongs to
+# `fintracker`, the backup directory sits on the system card, and rotation
+# deletes files there. The service user is deliberately not allowed any of that
+# — it must not be able to write outside /srv/fintracker.

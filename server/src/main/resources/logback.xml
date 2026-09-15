@@ -1,0 +1,37 @@
+<configuration>
+    <!--
+        Without this file the module has no resources at all (`processResources
+        NO-SOURCE`) and Logback falls back to DEBUG for everything. On the Pi
+        that meant roughly forty lines from Netty alone before the first request
+        arrived — buffer sizes, memory settings, loaded libraries — written to an
+        SD card by a service that runs around the clock (#105).
+
+        Until now that was worked around on the Pi itself, through
+        `-Dlogback.configurationFile=` in the systemd environment file. That
+        works on exactly one machine, and it silently wins over anything added
+        here — which is the unpleasant part: a change in this file would have had
+        no effect while both existed. The Pi-side override goes away with this.
+    -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--
+            Same pattern as :desktopApp, so a log line reads the same wherever it
+            comes from. The timestamp duplicates journald's own on the Pi; that
+            is worth it, because a pasted excerpt is then readable on its own.
+        -->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--
+        Netty says nothing at startup that anyone here needs, and it says a lot
+        of it. Ktor is deliberately left at INFO: its three startup lines are how
+        one sees which address was actually bound, and after #94 that is the
+        single most useful line in the log.
+    -->
+    <logger name="io.netty" level="WARN"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

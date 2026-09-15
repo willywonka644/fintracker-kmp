@@ -1,0 +1,19 @@
+[Unit]
+Description=Taegliche Sicherung der FinTracker-Server-Datenbank
+Documentation=https://github.com/willywonka644/fintracker/issues/96
+
+[Timer]
+OnCalendar=daily
+
+# Catches up a run missed because the Pi was off at the scheduled time. Without
+# this, the backup that would be worth the most after a power cut is exactly the
+# one that never happens — and power cuts are the occasion here, not the
+# exception: the Pi sits on a circuit whose breaker has tripped before.
+Persistent=true
+
+# Without jitter every timer fires at midnight sharp. For a job that reads from
+# and writes to an SD card, it is better not to start alongside everything else.
+RandomizedDelaySec=15m
+
+[Install]
+WantedBy=timers.target

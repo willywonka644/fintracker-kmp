@@ -1,0 +1,55 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# IDE/Tooling noise
+# The Kotlin Gradle plugin's project-level working directory. Ignored whole
+# rather than per subfolder: errors/ was covered, sessions/ then showed up as
+# an untracked folder after a build, and further ones arrive with new versions.
+.kotlin/
+
+# Local APK artifacts
+*.apk
+
+# Claude Code local settings
+.claude/
+
+# Project docs tracked separately
+CLAUDE.md
+FinTracker-Daily-Roadmap.md
+
+# Subproject build outputs
+**/build/
+
+# Logfiles
+desktop_sync.log
+desktop_sync_err.log
+
+# Versehentlich erstellte Dateien im Projektstamm
+/findstr
+/git
+/main
+/open
+/type
+
+# Datenbanken und Umgebungsdateien — nie ins Repo.
+# Der Sync-Server holt seinen Schluessel aus der Umgebung (#89), damit er dem
+# Quellbaum nicht folgen kann; diese Zeilen decken den anderen Weg ab, auf dem
+# echte Daten hineingeraten: eine Sicherung oder eine Serverkopie, die zum
+# Nachzaehlen im Projektordner abgelegt wird (#94).
+*.db
+*.db-wal
+*.db-shm
+*.env

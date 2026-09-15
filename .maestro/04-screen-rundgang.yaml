@@ -1,0 +1,114 @@
+# Phase 6.5 Tier 3 — open every screen once and come back.
+#
+# Finds crashes on navigation and dead menu entries. It does not check that the
+# screens are *correct* — that is what the targeted tests are for.
+#
+# After opening a screen it asserts that "Werkzeuge" (a section header that only
+# exists on the Mehr screen) is gone. Without that check, asserting the screen
+# title would pass even if navigation silently did nothing, because the same
+# word is still sitting in the menu list behind it.
+#
+# Deliberately NOT included, and why:
+#   - JSON-Backup wiederherstellen — replaces all data
+#   - JSON-Backup exportieren, CSV-Import — open the system file picker
+#   - Beleg scannen, QR-Code scannen — need the camera and a permission prompt
+#   - WLAN-Sync — starts a server and waits for a peer
+#   - Limit / Dispo — the reason is gone since #99 (it takes any account now,
+#     Girokonto included); the step is simply not written yet
+#
+# Runs against an emulator only: clearState wipes the app's data.
+appId: io.github.willywonka644.fintracker
+---
+- launchApp:
+    clearState: true
+
+# Audit und Kontoabgleich brauchen ein Konto, sonst führt der Weg ins Leere.
+- tapOn: "Konto hinzufügen"
+- tapOn: "Name"
+- inputText: "Testkonto"
+- tapOn: "Girokonto"
+- tapOn: "Speichern"
+- assertVisible: "Testkonto"
+
+# ── Untere Navigation ────────────────────────────────────────────────────────
+- tapOn: "Buchungen"
+- assertVisible: "Alle Konten"
+
+- tapOn: "Auswertung"
+- assertVisible: "Auswertungen"
+
+- tapOn: "Übersicht"
+- assertVisible: "Gesamtvermögen"
+
+- tapOn: "Mehr"
+- assertVisible: "Werkzeuge"
+
+# ── Abschnitt "Kontobezogen" ─────────────────────────────────────────────────
+- tapOn: "Daueraufträge"
+- assertVisible: "Daueraufträge"
+- assertNotVisible: "Werkzeuge"
+- back
+- assertVisible: "Werkzeuge"
+
+- tapOn: "Ratenzahlungen"
+- assertVisible: "Ratenzahlungen"
+- assertNotVisible: "Werkzeuge"
+- back
+- assertVisible: "Werkzeuge"
+
+# Audit und Kontoabgleich fragen erst nach dem Konto.
+- tapOn: "Audit"
+- tapOn: "Testkonto"
+- assertNotVisible: "Werkzeuge"
+- back
+- assertVisible: "Werkzeuge"
+
+- tapOn: "Kontoabgleich"
+- tapOn: "Testkonto"
+- assertVisible: "Kontoabgleich"
+- assertNotVisible: "Werkzeuge"
+- back
+- assertVisible: "Werkzeuge"
+
+# ── Verwaltung und App ───────────────────────────────────────────────────────
+# Die unteren Abschnitte liegen außerhalb des sichtbaren Bereichs. Ab hier wird
+# vor jedem Tippen gescrollt — und damit verliert die Werkzeuge-Prüfung ihre
+# Aussagekraft, weil die Überschrift dann ohnehin weggescrollt ist. Wo möglich
+# steht deshalb ein Inhalt des Zielscreens als Nachweis.
+- scrollUntilVisible:
+    element:
+      text: "Kategorien"
+    direction: DOWN
+- tapOn: "Kategorien"
+# "Lebensmittel" ist eine der voreingestellten Kategorien und steht nur hier.
+- assertVisible: "Lebensmittel"
+- back
+
+- scrollUntilVisible:
+    element:
+      text: "PIN-Schutz"
+    direction: DOWN
+- tapOn: "PIN-Schutz"
+# Der Dialogtitel kommt aus den String-Ressourcen und ist als einer von wenigen
+# ins Englische übersetzt — auf einem englischsprachigen Gerät heißt er also
+# anders als der Menüeintrag davor. Siehe F3 im Plan-Doc.
+- assertVisible: "(PIN-Schutz|PIN Protection)"
+- back
+
+- scrollUntilVisible:
+    element:
+      text: "Hilfe"
+    direction: DOWN
+- tapOn: "Hilfe"
+# Menüeintrag deutsch (hartkodiert), Screentitel übersetzt: auf einem
+# englischen Gerät tippt man "Hilfe" und landet auf "Help". Siehe F3.
+- assertVisible: "(Hilfe|Help)"
+- back
+
+- scrollUntilVisible:
+    element:
+      text: "Über FinTracker"
+    direction: DOWN
+- tapOn: "Über FinTracker"
+- assertVisible: "(Über FinTracker|About)"
+- back

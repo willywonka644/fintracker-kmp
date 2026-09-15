@@ -1,0 +1,16 @@
+ALTER TABLE booking ADD COLUMN lastModifiedAt INTEGER NOT NULL DEFAULT 0;
+UPDATE booking SET lastModifiedAt = CAST(strftime('%s', 'now') AS INTEGER) * 1000;
+
+ALTER TABLE account ADD COLUMN lastModifiedAt INTEGER NOT NULL DEFAULT 0;
+UPDATE account SET lastModifiedAt = CAST(strftime('%s', 'now') AS INTEGER) * 1000;
+
+ALTER TABLE category ADD COLUMN lastModifiedAt INTEGER NOT NULL DEFAULT 0;
+UPDATE category SET lastModifiedAt = CAST(strftime('%s', 'now') AS INTEGER) * 1000;
+
+ALTER TABLE recurringRule ADD COLUMN lastModifiedAt INTEGER NOT NULL DEFAULT 0;
+UPDATE recurringRule SET lastModifiedAt = CAST(strftime('%s', 'now') AS INTEGER) * 1000;
+
+CREATE TABLE app_settings (
+    key   TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Allow cleartext HTTP for local Wi-Fi sync.
+    Android's network-security-config does not support CIDR subnet ranges;
+    individual IP domains would be impractical for dynamic LAN addresses.
+    Since all HTTP traffic in this app goes to user-specified LAN hosts only,
+    permitting cleartext broadly is acceptable here.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

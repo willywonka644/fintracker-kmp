@@ -1,0 +1,80 @@
+# Phase 6.5 Tier 3 — the app must reject nonsense, not fall over.
+#
+# Every step here is something a real user does by accident: hitting save on an
+# empty form, typing a day that does not exist, putting letters in a money
+# field. The assertions check that the app stays where it is and says why,
+# rather than crashing or silently swallowing the input.
+#
+# Runs against an emulator only: clearState wipes the app's data.
+appId: io.github.willywonka644.fintracker
+---
+- launchApp:
+    clearState: true
+
+# ── Konto ohne Namen speichern ───────────────────────────────────────────────
+- tapOn: "Konto hinzufügen"
+- tapOn: "Girokonto"
+- tapOn: "Speichern"
+- assertVisible: "Name darf nicht leer sein"
+
+# ── Abrechnungstag außerhalb 1–28 ────────────────────────────────────────────
+- tapOn: "Name"
+- inputText: "Testkonto"
+- tapOn: "Abrechnungstag (1–28)"
+- eraseText
+- inputText: "99"
+- tapOn: "Speichern"
+- assertVisible: "Bitte einen Tag zwischen 1 und 28 eingeben"
+
+# Mit gültigem Tag kommt das Konto durch — der Dialog war also nur blockiert,
+# nicht kaputt.
+- eraseText
+- inputText: "1"
+- tapOn: "Speichern"
+- assertVisible: "Testkonto"
+
+# ── Buchung: Buchstaben im Betragsfeld ───────────────────────────────────────
+- tapOn: "Buchung hinzufügen"
+- tapOn: "Testkonto"
+- tapOn: "Einmalige Buchung"
+- tapOn: "Betrag"
+- inputText: "abc"
+- scrollUntilVisible:
+    element:
+      text: "Buchung speichern"
+    direction: DOWN
+- tapOn: "Buchung speichern"
+- assertVisible: "Bitte einen gültigen Betrag eingeben"
+
+# ── Buchung: Betrag 0 ────────────────────────────────────────────────────────
+- tapOn: "Betrag"
+- eraseText
+- inputText: "0"
+- scrollUntilVisible:
+    element:
+      text: "Buchung speichern"
+    direction: DOWN
+- tapOn: "Buchung speichern"
+- assertVisible: "Bitte einen gültigen Betrag eingeben"
+
+# ── Sehr lange Beschreibung ──────────────────────────────────────────────────
+- tapOn: "Betrag"
+- eraseText
+- inputText: "12"
+- tapOn: "Beschreibung (optional)"
+- inputText: "Ein absurd langer Verwendungszweck der niemals so eingegeben wuerde aber genau deswegen hier steht damit niemand ihn spaeter fuer unrealistisch haelt und ihn wieder herausnimmt"
+- scrollUntilVisible:
+    element:
+      text: "Buchung speichern"
+    direction: DOWN
+- tapOn: "Buchung speichern"
+
+# Die App steht noch und hat die Buchung angenommen.
+# Der Text wird per Regex geprüft: die Eingabe läuft über die Tastatur des
+# Emulators, die einzelne Wörter automatisch großschreibt.
+- tapOn: "Buchungen"
+- assertVisible: ".*absurd langer Verwendungszweck.*"
+# Der Punkt vor dem € steht für ein geschütztes Leerzeichen (U+00A0), das die
+# deutsche Zahlenformatierung dort einfügt — ein normales Leerzeichen im
+# Selektor findet nichts.
+- assertVisible: "-12,00.€"

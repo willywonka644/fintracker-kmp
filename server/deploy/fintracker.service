@@ -1,0 +1,42 @@
+[Unit]
+Description=FinTracker Sync-Server
+Documentation=https://github.com/willywonka644/fintracker/blob/main/docs/FinTracker-Server-Setup.md
+Wants=network-online.target
+After=network-online.target
+
+# The most important line in this file (#93). Without it, a missing stick —
+# unplugged, dead, waved through by `nofail` in fstab — leaves the server
+# looking at an empty directory, where it creates a new, empty database. Phone
+# and desktop then merge against that, and the merge cannot tell an empty
+# counterpart from a legitimately emptied one.
+#
+# A service that does not run is a visible fault. One with an empty database is
+# an invisible one.
+RequiresMountsFor=/srv/fintracker
+
+[Service]
+Type=simple
+User=fintracker
+Group=fintracker
+WorkingDirectory=/srv/fintracker
+
+# API key, database path and listening address. Root-owned, mode 600 — the key
+# belongs to the machine, not to the program, which is why it is not a file
+# inside the JAR and not a constant in the source tree (#89).
+EnvironmentFile=/etc/fintracker/server.env
+ExecStart=/opt/fintracker/bin/server
+
+Restart=on-failure
+RestartSec=5
+
+# Sandboxing. /opt/fintracker is owned by root, so the service cannot overwrite
+# its own program files, and ProtectSystem=strict makes the rest of the system
+# read-only — /srv/fintracker is the single writable exception it needs.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/srv/fintracker
+
+[Install]
+WantedBy=multi-user.target
