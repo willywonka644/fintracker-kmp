@@ -1,0 +1,159 @@
+name: macOS build
+
+# Builds the desktop app for macOS, which no machine in this project can do:
+# jpackage only ever produces a package for the operating system it runs on.
+#
+# Never automatic. A .dmg is wanted when somebody is about to be handed one, not
+# on every push, so this runs only when started by hand from the Actions tab.
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: >-
+          Attach the .dmg files to this release, creating it if it does not exist
+          (e.g. v0.10.0). Leave empty to keep them as workflow artifacts only —
+          those need a GitHub login to download, a release asset does not.
+        required: false
+        default: ''
+
+concurrency:
+  group: macos-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    # Only in the public code-only copy. macOS minutes are billed at ten times
+    # the Linux rate on a private repository, and a .dmg is of no use in one —
+    # the private releases are private, so nobody could be handed the file. The
+    # two trees are kept identical on purpose (the only difference is the note at
+    # the top of the README), so the guard travels with the file rather than the
+    # file being left out of the mirror and quietly drifting.
+    if: github.repository == 'willywonka644/fintracker-kmp'
+
+    # Both architectures, because guessing which Mac someone has is a guess that
+    # only shows up as "the app does not open". An Intel build runs on Apple
+    # Silicon through Rosetta; an arm64 build does not run on Intel at all.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x64
+
+    # macos-15, not macos-latest: an app built against an older macOS runs on the
+    # newer one, not the other way round. macos-14 is deprecated, so 15 is the
+    # oldest image still offered and therefore the widest reach.
+    runs-on: ${{ matrix.runner }}
+    name: Build .dmg (${{ matrix.arch }})
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      # Same 21 as the test workflow, for the same reason (#106). Set explicitly
+      # rather than relying on the image default, so an image update cannot
+      # silently change which JDK packages the app people install.
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      # jpackage takes only .icns on macOS, and .icns can only be built with
+      # Apple's own tools — which is why this is a step here and not a file in
+      # the tree: a hand-assembled icon container committed from Windows would be
+      # a binary nobody in this project can open, let alone check.
+      #
+      # The source is the same 512×512 icon.png the app already ships. The
+      # 512@2x entry is the one upscale in the set; every other size is a
+      # reduction. Dropping it would leave Retina Macs showing the 512 scaled by
+      # the window server instead, which is not better.
+      - name: Build the macOS icon
+        run: |
+          set -euo pipefail
+          SET="$RUNNER_TEMP/FinTracker.iconset"
+          mkdir -p "$SET"
+          for s in 16 32 128 256 512; do
+            sips -z "$s" "$s" desktopApp/src/main/resources/icon.png \
+              --out "$SET/icon_${s}x${s}.png" >/dev/null
+            sips -z "$((s * 2))" "$((s * 2))" desktopApp/src/main/resources/icon.png \
+              --out "$SET/icon_${s}x${s}@2x.png" >/dev/null
+          done
+          iconutil --convert icns "$SET" --output "$RUNNER_TEMP/FinTracker.icns"
+          ls -l "$RUNNER_TEMP/FinTracker.icns"
+
+      # packageDmg, not packageDistributionForCurrentOS: the same thing here, but
+      # it says which file this workflow exists to produce.
+      - name: Build the .dmg
+        run: |
+          set -euo pipefail
+          chmod +x ./gradlew
+          ./gradlew :desktopApp:packageDmg --no-daemon \
+            -PmacIconFile="$RUNNER_TEMP/FinTracker.icns"
+
+      # The packager names the file after the macOS bundle version, which is not
+      # the version this project calls itself — macOS refuses a version starting
+      # with 0, so the bundle says 1.10.0 where the app says 0.10.0 (see the
+      # comment on macPackageVersion in desktopApp/build.gradle.kts). The file
+      # name is the one place that can carry the real version, so it does, plus
+      # the architecture, which two files in one release cannot do without.
+      - name: Name the file after the app's own version and the architecture
+        id: dmg
+        run: |
+          set -euo pipefail
+          version="$(grep '^appVersion=' gradle.properties | cut -d= -f2)"
+          src="$(find desktopApp/build/compose/binaries/main/dmg -name '*.dmg' -print -quit)"
+          test -n "$src" || { echo "No .dmg was produced"; exit 1; }
+          out="$RUNNER_TEMP/FinTracker-$version-${{ matrix.arch }}.dmg"
+          mv "$src" "$out"
+          echo "path=$out" >> "$GITHUB_OUTPUT"
+          ls -lh "$out"
+
+      - name: Upload the .dmg
+        uses: actions/upload-artifact@v7
+        with:
+          name: dmg-${{ matrix.arch }}
+          path: ${{ steps.dmg.outputs.path }}
+          if-no-files-found: error
+
+  publish:
+    # Skipped along with the builds when the guard above does not hold, because a
+    # skipped `needs` skips this too.
+    needs: build
+    if: ${{ success() && inputs.release_tag != '' }}
+    runs-on: ubuntu-latest
+    name: Attach the .dmg files to ${{ inputs.release_tag }}
+    permissions:
+      contents: write # the only job here that writes anything to the repository
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Download both builds
+        uses: actions/download-artifact@v7
+        with:
+          pattern: dmg-*
+          merge-multiple: true
+          path: dist
+
+      # One job for both files rather than each build uploading its own: two jobs
+      # calling `gh release create` at the same time is a race, and the loser
+      # fails on a release that now exists.
+      - name: Create the release if it is not there yet, then attach the files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          ls -lh dist
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "$TAG" --notes \
+              "Desktop build for macOS. Unsigned: macOS will refuse the first launch, and it is opened once via System Settings › Privacy & Security › Open Anyway."
+          fi
+          gh release upload "$TAG" dist/*.dmg --clobber

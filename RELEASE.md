@@ -60,3 +60,40 @@ repository stays private. Publishing is the separate step below.
 - **No binary assets** — since v0.8.1 releases carry text only. An APK in a private
   repository serves nobody, and an installer has never been part of a release. If one is
   ever meant to ship, that is its own piece of work, not a step here.
+
+### macOS (public copy only)
+
+The rule above says why the private repository carries no files: nobody can reach them.
+That reasoning does not carry over to the public code-only copy, where the whole point of
+a release is that somebody without a GitHub account can download it. So macOS is the one
+exception, and it lives entirely over there.
+
+- Run **macOS build** from the Actions tab of `willywonka644/fintracker-kmp`. It builds
+  nothing on its own — no push triggers it — because a `.dmg` is wanted when somebody is
+  about to be handed one.
+- Leave **release_tag** empty for a test run: the two files stay as workflow artifacts,
+  which need a GitHub login to fetch. Give a tag (`v0.10.0`) to create that release in the
+  public copy and attach both files, which then have plain public download links.
+- **Two files, both architectures.** `-arm64` for Apple Silicon, `-x64` for Intel. Guessing
+  which one someone has shows up as "the app does not open", so neither is guessed.
+- The workflow refuses to run outside the public copy (`if: github.repository == …`). macOS
+  minutes cost ten times the Linux rate on a private repository, and the file would be
+  behind the same closed door as everything else there. The guard sits in the file rather
+  than the file being left out of the mirror, so the two trees stay identical.
+
+**Two things that are not the project's choice and have to be lived with:**
+
+- **The version in the bundle is not the version of the app.** macOS rejects a bundle
+  version starting with zero outright, so `0.10.0` becomes `1.10.0` in the metadata Finder
+  shows under Get Info. Derived in `desktopApp/build.gradle.kts`, not typed anywhere. The
+  file name and the About dialog both carry the real `0.10.0`.
+- **The app is unsigned, so the first launch is refused.** Signing needs a paid Apple
+  Developer account; notarising needs the same. Opening it once through
+  **System Settings › Privacy & Security › Open Anyway** is the whole workaround, and it is
+  needed once per machine. Say this when handing the file over — otherwise it reads as a
+  broken download.
+
+Building a `.dmg` locally needs a Mac; `jpackage` only ever produces a package for the
+system it runs on. The icon is the one part CI adds by hand (`sips` + `iconutil`, the only
+tools that write `.icns`); without `-PmacIconFile=…` a local build simply gets the default
+icon.

@@ -11,6 +11,15 @@ plugins {
 // Defined in gradle.properties so the Android and desktop builds cannot disagree.
 val appVersion: String by project
 
+// macOS refuses a bundle version whose first component is zero, so `0.10.0` does
+// not merely look odd there -- the packager stops. Derived rather than typed: while
+// the project is pre-1.0 the leading zero becomes a one, and the day appVersion
+// reaches 1.0.0 this hands it through untouched, so there is still one version to
+// bump. Nothing a user reads moves with it: the About dialog and the file name both
+// carry appVersion, and only the bundle metadata behind Finder's Get Info differs.
+val macPackageVersion: String =
+    if (appVersion.startsWith("0.")) "1." + appVersion.removePrefix("0.") else appVersion
+
 // The About dialog used to carry a hand-written version string and sat two minor
 // releases behind what was actually shipping. Generating the constant from the
 // same property the packager uses makes that drift impossible.
@@ -104,7 +113,7 @@ compose.desktop {
         mainClass = "io.github.willywonka644.fintracker.MainKt"
         jvmArgs("-Dfile.encoding=UTF-8")
         nativeDistributions {
-            targetFormats(TargetFormat.Msi, TargetFormat.Exe)
+            targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Dmg)
             packageName = "FinTracker Desktop"
             packageVersion = appVersion
             description = "Personal finance tracker"
@@ -118,6 +127,19 @@ compose.desktop {
                 upgradeUuid = "4f8b2c3d-1a2e-4f3b-9c8d-5e6f7a8b9c0d"
                 dirChooser = true
                 perUserInstall = true
+            }
+            macOS {
+                bundleID = "io.github.willywonka644.fintracker"
+                packageVersion = macPackageVersion
+                // No dockName: it would name the app in the menu bar something
+                // other than the bundle it lives in. One name, as on Windows.
+                //
+                // The icon is supplied by CI, which builds the .icns from the same
+                // icon.png the app already ships, using Apple's own tools -- the
+                // only ones that write that format. Optional on purpose: a build on
+                // a Mac without it gets the default icon instead of a failure.
+                val macIcon = project.providers.gradleProperty("macIconFile")
+                if (macIcon.isPresent) iconFile.set(project.file(macIcon.get()))
             }
         }
     }
